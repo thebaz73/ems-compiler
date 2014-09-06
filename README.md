@@ -1,0 +1,1 @@
+# EMS - Enterprise Monitoring System## EMS Java MIB Compiler### Overview ### Project scope### TechnologiesCurrent project uses following core technologies:* Java* Maven* Template engine (Velocity)### UsageClone project and compile.

@@ -1,0 +1,212 @@
+#* @vtlvariable name="tables" type="java.util.Collection" *#
+#* @vtlvariable name="table" type="org.jsmiparser.smi.SmiTable" *#
+#* @vtlvariable name="row" type="org.jsmiparser.smi.SmiRow" *#
+#* @vtlvariable name="TypeConverter" type="ems.mib.compiler.tools.generator.TypeConverter" *#
+#* @vtlvariable name="SmiUtil" type="org.jsmiparser.smi.SmiUtil" *#
+#* @vtlvariable name="scalars" type="java.util.Collection" *#
+#* @vtlvariable name="scalar" type="org.jsmiparser.smi.SmiVariable" *#
+#* @vtlvariable name="columns" type="java.util.Collection" *#
+#* @vtlvariable name="column" type="org.jsmiparser.smi.SmiVariable" *#
+package $packageName;
+
+import ems.snmp.toolkit.domain.EmsEnum;
+import ems.snmp.toolkit.managed.annotation.ManagedObject;
+import ems.snmp.toolkit.managed.annotation.OidProperty;
+import ems.snmp.toolkit.managed.annotation.TableColumn;
+import ems.snmp.toolkit.managed.annotation.TableRow;
+import ems.snmp.toolkit.managed.mixin.ConfigurationAware;
+import ems.snmp.toolkit.managed.mixin.SnmpEnquirer;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+* Created by EMS Mib Compiler.
+* Do not edit
+*/
+@SuppressWarnings("UnusedDeclaration")
+@ManagedObject
+public class $className implements ConfigurationAware, SnmpEnquirer {
+#foreach($scalar in $scalars)
+#set($scalarType = $scalar.getType())
+    
+    /*
+    * Property accessors for: $scalar.getCodeId()
+    * Node type: $scalarType
+    * Node base type: $scalarType.getBaseType()
+    * OID: $scalar.getCodeOid()
+    * Access: $scalar.getAccessAll()
+    * Description: $scalar.getDescription()
+    */
+#set($scalarJavaType = $TypeConverter.toJavaType($scalar))
+#if($TypeConverter.isEnumerated($scalar))
+#set($scalarJavaType = $SmiUtil.ucFirst($scalar.getCodeId())+"Enum")
+
+    enum $scalarJavaType implements EmsEnum<$TypeConverter.toJavaType($scalar)> {
+#foreach($scalarEnumConstant in $scalar.type.enumValues)
+        $scalarEnumConstant.codeId ($scalarEnumConstant.value)#if( $velocityHasNext ),
+#else;
+
+        private $TypeConverter.toJavaType($scalar) value;
+
+        private $scalarJavaType($TypeConverter.toJavaType($scalar) i) {
+            value = i;
+        }
+
+        public $TypeConverter.toJavaType($scalar) getValue() {
+            return value;
+        }
+#end
+#end
+    }
+#end
+
+    private $scalarJavaType $scalar.getCodeId();
+
+#if($scalar.getAccessAll() == "read-only")
+    @OidProperty(oid = "$scalar.getCodeOid().0", oidName = "$scalar.getCodeId()", fieldName = "$scalar.getCodeId()")
+    public $scalarJavaType $scalar.getGetterMethodId()() {
+        return $scalar.getCodeId();
+    }
+
+    private void $scalar.getSetterMethodId()($scalarJavaType $scalar.getCodeId()) {
+        this.$scalar.getCodeId() = $scalar.getCodeId();
+    }
+#elseif($scalar.getAccessAll() == "read-write")
+    @OidProperty(oid = "$scalar.getCodeOid().0", oidName = "$scalar.getCodeId()", fieldName = "$scalar.getCodeId()")
+    public $scalarJavaType $scalar.getGetterMethodId()() {
+        return $scalar.getCodeId();
+    }
+
+    @OidProperty(oid = "$scalar.getCodeOid().0", oidName = "$scalar.getCodeId()", fieldName = "$scalar.getCodeId()")
+    public void $scalar.getSetterMethodId()($scalarJavaType $scalar.getCodeId()) {
+        this.$scalar.getCodeId() = $scalar.getCodeId();
+    }
+#elseif($scalar.getAccessAll() == "read-create")
+    @OidProperty(oid = "$scalar.getCodeOid().0", oidName = "$scalar.getCodeId()", fieldName = "$scalar.getCodeId()")
+    public $scalarJavaType $scalar.getGetterMethodId()() {
+        return $scalar.getCodeId();
+    }
+
+    @OidProperty(oid = "$scalar.getCodeOid().0", oidName = "$scalar.getCodeId()", fieldName = "$scalar.getCodeId()")
+    public void $scalar.getSetterMethodId()($scalarJavaType $scalar.getCodeId()) {
+        this.$scalar.getCodeId() = $scalar.getCodeId();
+    }
+#elseif($scalar.getAccessAll() == "write-only")
+    private $scalarJavaType $scalar.getGetterMethodId()() {
+        return $scalar.getCodeId();
+    }
+
+    @OidProperty(oid = "$scalar.getCodeOid().0", oidName = "$scalar.getCodeId()", fieldName = "$scalar.getCodeId()")
+    public void $scalar.getSetterMethodId()($scalarJavaType $scalar.getCodeId()) {
+        this.$scalar.getCodeId() = $scalar.getCodeId();
+    }
+#end
+#end
+##for each scalar
+
+#foreach($column in $columns)
+#set($columnType = $column.getType())
+    
+    /*
+    * Property accessors for: $column.getCodeId()
+    * Node type: $columnType
+    * Node base type: $columnType.getBaseType()
+    * OID: $column.getCodeOid()
+    * Access: $column.getAccessAll()
+    * Description: $column.getDescription()
+    */
+#set($columnJavaType = $TypeConverter.toJavaType($column))
+#if($TypeConverter.isEnumerated($column))
+#set($columnJavaType = $SmiUtil.ucFirst($column.getCodeId())+"Enum")
+
+    enum $columnJavaType implements EmsEnum<$TypeConverter.toJavaType($column)> {
+#foreach($columnEnumConstant in $column.type.enumValues)
+        $columnEnumConstant.codeId ($columnEnumConstant.value)#if( $velocityHasNext ),
+#else;
+
+        private $TypeConverter.toJavaType($column) value;
+
+        private $columnJavaType($TypeConverter.toJavaType($column) i) {
+            value = i;
+        }
+
+        public $TypeConverter.toJavaType($column) getValue() {
+            return value;
+        }
+#end
+#end
+    }
+#end
+
+    private $columnJavaType [] $column.getCodeId();
+
+#if($column.getAccessAll() == "read-only")
+    @OidProperty(oid = "$column.getCodeOid()", oidName = "$column.getCodeId()", fieldName = "$column.getCodeId()")
+    public @TableColumn $columnJavaType [] $column.getGetterMethodId()() {
+        return $column.getCodeId();
+    }
+
+    private void $column.getSetterMethodId()($columnJavaType [] $column.getCodeId()) {
+        this.$column.getCodeId() = $column.getCodeId();
+    }
+#elseif($column.getAccessAll() == "read-write")
+    @OidProperty(oid = "$column.getCodeOid()", oidName = "$column.getCodeId()", fieldName = "$column.getCodeId()")
+    public @TableColumn $columnJavaType [] $column.getGetterMethodId()() {
+        return $column.getCodeId();
+    }
+
+    @OidProperty(oid = "$column.getCodeOid()", oidName = "$column.getCodeId()", fieldName = "$column.getCodeId()")
+    public void $column.getSetterMethodId()(@TableColumn $columnJavaType [] $column.getCodeId()) {
+        this.$column.getCodeId() = $column.getCodeId();
+    }
+#elseif($column.getAccessAll() == "read-create")
+    @OidProperty(oid = "$column.getCodeOid()", oidName = "$column.getCodeId()", fieldName = "$column.getCodeId()")
+    public @TableColumn $columnJavaType [] $column.getGetterMethodId()() {
+        return $column.getCodeId();
+    }
+
+    @OidProperty(oid = "$column.getCodeOid()", oidName = "$column.getCodeId()", fieldName = "$column.getCodeId()")
+    public void $column.getSetterMethodId()(@TableColumn $columnJavaType [] $column.getCodeId()) {
+        this.$column.getCodeId() = $column.getCodeId();
+    }
+#elseif($column.getAccessAll() == "write-only")
+    private $columnJavaType [] $column.getGetterMethodId()() {
+        return $column.getCodeId();
+    }
+
+    @OidProperty(oid = "$column.getCodeOid()", oidName = "$column.getCodeId()", fieldName = "$column.getCodeId()")
+    public void $column.getSetterMethodId()(@TableColumn $columnJavaType [] $column.getCodeId()) {
+        this.$column.getCodeId() = $column.getCodeId();
+    }
+#end
+#end
+##for each column
+
+#foreach($table in $tables)
+#set($tableType = $table.getType())
+#set($row = $table.row)
+
+    /*
+    * Property accessors for: $table.getCodeId()
+    * Table OID: $table.getOidStr()
+    * Row OID: $row.getOidStr()
+    * Access: $table.getAccessAll()
+    * Description: $table.getDescription().replaceAll("/\*", "").replaceAll("\*/","")
+    */
+
+    private $SmiUtil.ucFirst($row.getId()) [] $table.getCodeId();
+
+    @OidProperty(oid = "$table.getOidStr()", oidName = "$table.getCodeId()", fieldName = "$table.getCodeId()")
+    public
+    @TableRow
+    $SmiUtil.ucFirst($row.getId()) [] get$SmiUtil.ucFirst($table.getCodeId())() {
+        return $table.getCodeId();
+    }
+    
+    private void set$SmiUtil.ucFirst($table.getCodeId())($SmiUtil.ucFirst($row.getId()) [] rows) {
+        this.$table.getCodeId() = rows;
+    }
+#end
+##for each table
+}

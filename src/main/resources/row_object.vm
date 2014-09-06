@@ -1,0 +1,53 @@
+#* @vtlvariable name="currentTable" type="org.jsmiparser.smi.SmiTable" *#
+package $packageName;
+
+import ems.snmp.toolkit.domain.EmsEnum;
+import ems.snmp.toolkit.managed.annotation.OidBind;
+
+/**
+* Created by EMS Mib Compiler.
+* Do not edit
+*/
+#set($tableType = $currentTable.type)
+#set($row = $currentTable.row)
+@OidBind(oid = "$row.getOidStr()")
+public class $SmiUtil.ucFirst($row.getId()) {
+
+#foreach($rowColumn in $row.columns)
+#set($rowColumnType = $rowColumn.getType())
+#set($rowColumnJavaType = $TypeConverter.toJavaType($rowColumn))
+#if($TypeConverter.isEnumerated($rowColumn))
+#set($rowColumnJavaType = $SmiUtil.ucFirst($rowColumn.getCodeId())+"Enum")
+
+    enum $rowColumnJavaType implements EmsEnum<$TypeConverter.toJavaType($rowColumn)> {
+#foreach($rowColumnEnumConstant in $rowColumn.type.enumValues)
+        $rowColumnEnumConstant.codeId ($rowColumnEnumConstant.value)#if( $velocityHasNext ),
+#else;
+
+        private $TypeConverter.toJavaType($rowColumn) value;
+
+        private $rowColumnJavaType($TypeConverter.toJavaType($rowColumn) i) {
+            value = i;
+        }
+
+        public $TypeConverter.toJavaType($rowColumn) getValue() {
+            return value;
+        }
+#end
+#end
+    }
+#end
+
+    @OidBind(oid = "$rowColumn.getCodeOid()")
+    private $rowColumnJavaType $rowColumn.getCodeId();
+
+    public $rowColumnJavaType $rowColumn.getGetterMethodId()() {
+        return $rowColumn.getCodeId();
+    }
+
+    private void $rowColumn.getSetterMethodId()($rowColumnJavaType $rowColumn.getCodeId()) {
+        this.$rowColumn.getCodeId() = $rowColumn.getCodeId();
+    }
+#end
+##for each rowColumn
+}
